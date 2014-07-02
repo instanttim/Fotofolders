@@ -1,0 +1,170 @@
+/*---- GENERAL ----*/
+
+BODY {
+	background-color: #dddeeb;
+	color: #262626;
+	font-family: Arial;
+	font-size: 14px;
+	margin: 0px;
+	text-align: center; /* IE HACK */
+}
+
+A,
+A:VISITED {
+	color: #444;
+	text-decoration: none;
+}
+
+A:HOVER,
+A:ACTIVE { color: #FFCC00; }
+
+H1 {
+	font-size: 18px;
+	font-weight: bold;
+	color: #FFCC00;
+	padding: 2px 4px;
+	margin: 0px;
+}
+
+H2 {
+	font-size: 14px;
+	font-weight: bold;
+	text-align: left;
+	background-color: #83B2C5;
+	color: #262626;
+	padding: 4px 6px;
+	margin: 0px;
+}
+
+.container {
+	background-color: #6C94A3;
+	color: #b8d1db;
+	border: 1px solid #444;
+}
+
+.container a:link,
+.container a:visited { color: #D6D6D6; }
+.container a:hover,
+.container a:active { color: #FFCC00; }
+
+#nav {
+	padding: 10px 12px;
+	text-align: left;
+	border-width: 0px 0px 1px 0px;
+}
+
+#about {
+	font-size: 11px;
+	float: right;
+	margin-top: 4px;
+}
+
+.footer {
+	text-align: center;
+	font-size: 9px;
+	padding: 10px;
+	color: #000;
+}
+
+IMG {
+	background-color: #333;
+	border: 1px solid #D6D6D6;
+	vertical-align: middle;
+}
+
+/*---- INDEX ----*/
+
+BODY #index {
+	width: 400px;
+	margin: 20px auto;
+	overflow: hidden;
+	text-align: center; /* IE HACK */
+}
+
+.indexCaption {
+	font-size: 16px;
+	padding: 4px;
+}
+
+.indexAlbum {
+	padding: 10px;
+	text-align: left;
+}
+
+.indexAlbumTitle {
+	font-size: 18px;
+	font-weight: bold;
+	padding: 4px;
+}
+
+.indexSubAlbum {
+	margin-left: 12px;
+	padding: 2px;
+}
+
+
+/*---- ALBUMS ----*/
+
+BODY #albums {
+	margin: 20px auto;
+	width: 600px;
+	overflow: hidden;
+	text-align: center; /* IE HACK */
+}
+
+TABLE.thumbtable {
+	margin: auto;
+	border-spacing: 16px;
+}
+
+.thumbtable TD {
+	width: 90px;
+	padding: 0px;
+	vertical-align: top;
+	font-size: 12px;
+	padding: 4px;
+	text-align: center;
+}
+
+/*-- PHOTO --*/
+
+BODY #photos {
+	margin: 20px auto;
+	text-align: center; /* IE HACK */
+}
+
+#photoNav {
+	text-align: center;
+	padding-bottom: 2px;
+}
+
+#photoNav2 {
+	padding: 3px 5px;
+	text-align: right;
+}
+
+
+.photoBorder {
+	padding: 8px;
+	background-color: #FFF;
+	border: solid 1px #262626;
+}
+
+.photoCaption {
+	padding: 6px;
+	font-size: 14px;
+}
+
+
+/*-- NOTES --*/
+/*
+Colors:
+
+#D5B44C
+#8A7532
+#6C94A3
+#FFFFFF
+#292929
+#D6D6D6
+
+*/
