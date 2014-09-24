@@ -19,6 +19,7 @@ if (isset($index->album_array)) {
 }
 
 $smarty->assign("debug_output", $debugOutput);
+$smarty->assign("version",FF_VERSION);
 $smarty->display("index.tpl");
 
 ?>

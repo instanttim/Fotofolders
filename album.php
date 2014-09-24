@@ -6,9 +6,9 @@ $smarty = createSmarty();
 $smarty->assign("galleryName",FF_TITLE);
 
 if (isset($_GET['album'])) {
-	$albumID = $_GET['album']
+	$albumID = $_GET['album'];
 } else {
-	$albumID = "_index"
+	$albumID = "_index";
 }
 
 $album = new album($albumID);
@@ -27,6 +27,7 @@ if (isset($album->photo_array) && count($album->photo_array) > 0) {
 }
 
 $smarty->assign("debug_output", $debugOutput);
+$smarty->assign("version",FF_VERSION);
 $smarty->display("album.tpl");
 
 ?>

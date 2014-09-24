@@ -1,8 +1,8 @@
 <?php
 
 //
-// Fotofolders v1.3b
-// Copyright 2004-2008. All Rights Reserved, Timothy Martin.
+// Fotofolders (config last changed for v1.3b)
+// Copyright 2004-2009. All Rights Reserved, Timothy Martin.
 //
 
 //

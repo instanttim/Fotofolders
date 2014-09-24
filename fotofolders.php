@@ -4,7 +4,7 @@ require("config.php");
 //
 // Please don't change this!
 //
-define("FF_VERSION","1.3b3");
+define("FF_VERSION","1.4b1");
 
 // sets up the smarty template
 function createSmarty() {
@@ -15,6 +15,18 @@ function createSmarty() {
 	$smarty->debugging = FALSE;
 
 	return $smarty;
+}
+
+// detect Mobile Safari
+function detectIOS() {
+	$browserAsString = $_SERVER['HTTP_USER_AGENT'];
+
+	if (strstr($browserAsString, " AppleWebKit/") && strstr($browserAsString, " Mobile/")) {
+	    return true;
+	} else {
+		return false;
+	}
+	
 }
 
 // number cycler					 
@@ -29,9 +41,11 @@ function cycle($min, $max, $newNum) {
 }
 
 // debugging, html style
-function print_debug($debug_input) {
+function print_debug($debug_input, $debug_type="unspecified") {
 	global $debugOutput;
-	$debugOutput = htmlentities(print_r($debug_input, TRUE), ENT_COMPAT, 'UTF-8');
+	$debugOutput .= "<p>********** DEBUG OUTPUT ($debug_type) **********<br/>";
+	$debugOutput .= htmlentities(print_r($debug_input, TRUE), ENT_COMPAT, 'UTF-8');
+	$debugOutput .= "</p>";
 }
 
 class index {
@@ -45,7 +59,7 @@ class index {
 			// go through and get all the files that are really directories (and don't start with ".")
 			while ($file = readdir($dir_handle)) { 
 				if (strpos($file, ".") !== 0) {
-					if (is_dir(FF_PHOTODIR.$file) && $file != current(split("/",FF_THUMBDIR))) {
+					if (is_dir(FF_PHOTODIR.$file) && $file != current(explode("/",FF_THUMBDIR))) {
 						$directories[] = $file;
 					}							
 				}
@@ -153,6 +167,7 @@ class index {
 		
 		remove the index class!
 		
+		change my filename "explode" commands deal with filenames with multiple periods in them!
 */
 class album {
 	// album vars
@@ -181,6 +196,7 @@ class album {
 		$this->name = htmlentities($name, ENT_COMPAT, 'UTF-8');
 		$this->id = rawurlencode($albumPath);
 		$this->dir = FF_PHOTODIR.$albumPath."/";
+		$this->assetURL = FF_URL.$this->dir;
 		
 		// create the breadcrumb 2d array
 		$parentAlbum = "";
@@ -196,18 +212,34 @@ class album {
 				// make sure it's not a hidden file
 				if (strpos($file, ".") !== 0) {
 					// check to see if it's a directory (and not the thumbdir) or a file
-					if (is_dir($this->dir.$file) && $file != current(split("/",FF_THUMBDIR))) {
+					if (is_dir($this->dir.$file) && $file != current(explode("/",FF_THUMBDIR))) {
+						// it is a directory, so stick it in the subalbums array
 						$subalbumDirs[] = $file;
-					} else if (is_file($this->dir.$file)) {	// if it's a real file
-					
-						if (!is_file($this->dir.FF_THUMBDIR.$file)) {
-						// make sure there's a thumb for this file
-							if (preg_match('/\.jpg$/', $file)) {
-							// if it's a jpg add it to the todo list
+					} else if (is_file($this->dir.$file)) {
+						// it's a real file
+						// TODO: shouldn't i check what extensions i'm adding here? 
+
+						// let's see if there's a thumbnail
+						if (!is_file($this->dir.FF_THUMBDIR.substr($file, 0, -4).".jpg")) {
+							// there isn't a thumb for this file
+							// TODO: i should distingish between the full filename and basename without extension
+							// TODO: i should be checking for the thumb file with jpg, regardless of the image type
+							// TODO: a substring of the last three chars lower-cased is faster than a preg_match
+							if (preg_match('/\.jpg$/', strtolower($file))) {
+								// if it's a jpg add it to the todo list
 								$makeThumbsArray[] = $file;
 							}
 						}
-						$photoFiles[] = $file;
+												
+						// check if there's a file with the same name but without the last extension (presumably a movie file)
+						// example: myfile.mov.jpg and myfile.mov
+						$fileNoExt = substr($file, 0, -4);
+						
+						if (!is_file($this->dir.$fileNoExt)) {
+							// there's no file just like this one but missing the extension
+							// so it all checks out, add it to the photo array
+							$photoFiles[] = $file;
+						}
 					}						
 				}
 			}
@@ -220,7 +252,7 @@ class album {
 		}
 		
 		// DEBUG
-		//print_debug($subalbumDirs);
+		//print_debug($subalbumDirs, "Albums");
 		
 		// sort the list of directories and make a new array with names, urls, and a thumb	
 		if (isset($subalbumDirs)) {
@@ -254,15 +286,15 @@ class album {
 						if (is_file($albumPath.$file) && strpos($file, ".") !== 0) {
 							
 							// check if there is a corrisponding thumbnail file
-							if (is_file($albumPath.FF_THUMBDIR.$file)) {
+							if (is_file($albumPath.FF_THUMBDIR.substr($file, 0, -4).".jpg")) {
 								// if there isn't a custom thumb, add this thumb to the array for random picking
 								if (!isset($albumThumb)) {
-									$thumb_array[] = $albumPath.FF_THUMBDIR.$file;
+									$thumb_array[] = substr($file, 0, -4).".jpg";
 								}
 							} else {
 								// there wasn't a corresponding thumbnail
 								$makeThumbsArray[] = $file;
-								$thumb_array[] = $albumPath.FF_THUMBDIR.$file;
+								$thumb_array[] = substr($file, 0, -4).".jpg";
 							}
 						}
 					}
@@ -280,23 +312,18 @@ class album {
 					$albumThumb = FF_IMAGESDIR.FF_EMPTYIMG;
 				}
 				
-				// new code that properly encodes the path for the img src attribute
-				$albumThumbSrcParts = explode('/', $albumThumb);
-				for ($i = 0; $i <= count($albumThumbSrcParts)-1; $i++) {
-					$albumThumbSrcParts[$i] = rawurlencode($albumThumbSrcParts[$i]);
-				}
-				$albumThumbSrc = implode('/',$albumThumbSrcParts);
+				$albumThumbURL = $this->assetURL.rawurlencode($albumName)."/".FF_THUMBDIR.rawurlencode($albumThumb);
 				
 				$this->album_array[] = array(
 					"name"=>htmlentities($albumName, ENT_COMPAT, 'UTF-8'),
 					"id"=>rawurlencode($albumName),
-					"thumbsrc"=>htmlentities($albumThumbSrc, ENT_COMPAT, 'UTF-8')
+					"thumb_url"=>htmlentities($albumThumbURL, ENT_COMPAT, 'UTF-8')
 				);
 			}
 		}
 				
 		//DEBUG
-		print_debug($this->album_array);		
+		//print_debug($this->album_array, "Album Array");		
 		
 		// sort the list of photos and make a new array with names and thumb urls	
 		if (isset($photoFiles)) {
@@ -306,37 +333,53 @@ class album {
 			$i=1;
 			
 			foreach ($photoFiles as $file) {
-				$fileParts = explode('.', $file);
-				$fileExt = array_pop($fileParts);
+				//$fileParts = explode('.', $file);
+				//$fileExt = array_pop($fileParts);
+				$fileExt = end(explode('.', $file));
 
-				switch ($fileExt) {
-				case 'jpg':
-				case 'gif':
-				case 'png':
-				   $fileType = 'image';
-				   break;
-				case 'mov':
-				case 'mp4':
-				   $fileType = 'movie';
-				   break;
+				switch (strtolower($fileExt)) {
+					case 'jpg':
+					case 'gif':
+					case 'png':
+						$fileType = 'image';
+						$thumbfile = substr($file, 0, -4).".jpg"; // the assumed thumbfile name
+						$missingThumb = FF_EMPTYIMG;
+						break;
+					case 'mov':
+					case 'mp4':
+					case 'm4v':
+						$fileType = 'movie';
+						$thumbfile = $file.".jpg"; // the assumed thumbfile name
+						$missingThumb = FF_MOVIEIMG;
+						break;
 				}
+
+				// check if the thumb exists
+				if (!is_file($this->dir.FF_THUMBDIR.$thumbfile)) {
+					$thumbURL = FF_URL.FF_IMAGESDIR.rawurlencode($missingThumb);
+				} else {
+					$thumbURL = $this->assetURL.FF_THUMBDIR.rawurlencode($thumbfile);
+				}
+
+				$photoURL = $this->assetURL.rawurlencode($file);
 				
+				// add it to the class photo array
 				$this->photo_array[] = array(
 					"index"=>$i,
 					"type"=>$fileType,
-					"name"=>current(split("\.jpg",$file)),
-					"thumb_file"=>FF_THUMBDIR.$file,
-					"thumb_url"=>FF_THUMBDIR.rawurlencode($file),
+					"name"=>substr($file, 0, -4),
 					"photo_file"=>$file,
-					"photo_url"=>rawurlencode($file),
+					"thumb_url"=>$thumbURL,
+					"photo_url"=>$photoURL
 				);
+
 				// increment the indexer
 				$i++;
 			}
 		}
 			
 		//DEBUG
-		//print_debug($this->photo_array);
+		//print_debug($this->photo_array, "Photo Arrays");
 			
 	} // end of constructor
 	
@@ -352,11 +395,12 @@ class album {
 		// go through each file in the array and thumbnail 'em. 
 		for ($i=0; $i < count($fileArray); $i++) {
 			
+			$fileName = $fileArray[$i];
 			// DEBUG
-			//print("working on: ".$albumDir.$fileArray[$i]."<br>");
+			//print("working on: ".$albumDir.$fileName."<br>");
 	
-			$photoImage = imagecreatefromjpeg($albumDir.$fileArray[$i]); 
-			$imagedata = getimagesize($albumDir.$fileArray[$i]); 
+			$photoImage = imagecreatefromjpeg($albumDir.$fileName); 
+			$imagedata = getimagesize($albumDir.$fileName); 
 			
 			$sourceSide = min($imagedata[0], $imagedata[1]) * FF_THUMBSCALE;
 			$sourceX = ($imagedata[0] - $sourceSide)/2;
@@ -384,11 +428,13 @@ class album {
 		
 			$thumb = imagecreatetruecolor(FF_THUMBSIZE, FF_THUMBSIZE);
 			imagecopyresampled($thumb, $photoImage, 0, 0, $sourceX, $sourceY, FF_THUMBSIZE, FF_THUMBSIZE, $sourceSide, $sourceSide);
-	
-			imagejpeg($thumb, $albumDir.FF_THUMBDIR.$fileArray[$i], FF_THUMBQUALITY);
+			
+			$thumbFileName = substr($fileName, 0, -4).".jpg";
+
+			imagejpeg($thumb, $albumDir.FF_THUMBDIR.$thumbFileName, FF_THUMBQUALITY);
 			
 			// DEBUG
-			//print("thumb created: ".$albumDir.FF_THUMBDIR.$fileArray[$i]."<br>");
+			//print("thumb created: ".$albumDir.FF_THUMBDIR.$fileName."<br>");
 		}
 	}
 	

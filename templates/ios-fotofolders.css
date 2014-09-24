@@ -1,9 +1,9 @@
 /*---- GENERAL ----*/
 
 BODY {
-	background-color: #EEE;
-	color: #262626;
-	font-family: Arial;
+	background-color: #000;
+	color: #AAA;
+	font-family: Helvetica Neue;
 	font-size: 14px;
 	margin: 0px;
 	text-align: center; /* IE HACK */
@@ -37,20 +37,26 @@ H2 {
 }
 
 .container {
-	background-color: #FFF;
+	background-color: #444;
 	color: #b8d1db;
-	border: 1px solid #444;
+	border: 1px solid #888;
 }
 
 .container a:link,
-.container a:visited { color: #888; }
+.container a:visited { color: #D6D6D6; }
 .container a:hover,
-.container a:active { color: #888; }
+.container a:active { color: #FFCC00; }
 
 #nav {
 	padding: 10px 12px;
 	text-align: left;
 	border-width: 0px 0px 1px 0px;
+}
+
+#about {
+	font-size: 11px;
+	float: right;
+	margin-top: 4px;
 }
 
 .footer {
@@ -62,7 +68,7 @@ H2 {
 
 IMG {
 	background-color: #333;
-/*	border: 1px solid #D6D6D6;*/
+	border: 1px solid #D6D6D6;
 	vertical-align: middle;
 }
 
@@ -81,24 +87,19 @@ BODY #index {
 }
 
 .indexAlbum {
-	padding: 0px;
+	padding: 10px;
 	text-align: left;
 }
 
 .indexAlbumTitle {
-	height: 19px;
-	padding: 10px 10px 14px 10px;
-	border-bottom: 1px solid #CCC;
-	font-size: 20px;
+	font-size: 18px;
 	font-weight: bold;
+	padding: 4px;
 }
 
 .indexSubAlbum {
-	background-color: white;
-	border-bottom: 1px solid #CCC;
-	height: 43px;
-	margin-left: 0px;
-	padding: 0px;
+	margin-left: 12px;
+	padding: 2px;
 }
 
 
@@ -133,8 +134,9 @@ BODY #photos {
 }
 
 #photoNav {
-	text-align: center;
-	padding-bottom: 2px;
+	position: absolute;
+	right: 0px;
+	background-color: red;
 }
 
 #photoNav2 {
@@ -144,15 +146,11 @@ BODY #photos {
 
 
 .photoBorder {
-	padding: 8px;
-	background-color: #FFF;
-	border: solid 1px #262626;
+	border: none;
 }
 
 .movieBorder {
-	padding: 4px;
-	background-color: #000;
-	border: solid 1px #262626;
+	border: none;
 }
 
 .photoCaption {

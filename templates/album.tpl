@@ -19,7 +19,7 @@
 	{section name=count loop=$album_array}
 					<td>
 						<a href="album.php?album={$albumID}%2F{$album_array[count].id}">
-							<img class="albumThumb" height="{#thumbSize#}" width="{#thumbSize#}" src="{$album_array[count].thumbsrc}" alt="{$album_array[count].name} Thumb" /><br/>
+							<img class="albumThumb" height="{#thumbSize#}" width="{#thumbSize#}" src="{$album_array[count].thumb_url}" alt="{$album_array[count].name} Thumb" /><br/>
 							{$album_array[count].name}
 						</a>
 					</td>
@@ -39,13 +39,12 @@
 	{if $album_array}
 		<h2>Photos</h2>
 	{/if}
-		<a href="#" onclick="javascript:popupWindow('{$albumID}');">View Slideshow</a><br/>
 		<table class="thumbtable">
 			<tr>
 	{section name=count loop=$photo_array}
 				<td valign="top">
 					<a href="photo.php?album={$albumID}&amp;photo={$photo_array[count].index}">
-						<img height="{#thumbSize#}" width="{#thumbSize#}" src="{$albumDir}{$photo_array[count].thumb_file}" alt="{$photo_array[count].thumb_file} Thumb" /><br/>
+						<img height="{#thumbSize#}" width="{#thumbSize#}" src="{$photo_array[count].thumb_url}" alt="{$photo_array[count].thumb_file} Thumb" /><br/>
 		{if #showFilenames#}
 						{$photo_array[count].name}
 		{/if}
