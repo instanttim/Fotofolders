@@ -69,30 +69,26 @@ class index {
 			// if there are directories, sort and make a new array with names/urls	
 			if (isset($directories)) {
 				if (FF_MANUALINDEX) {
-					// check for the data file
-					// DONE: check to see if any directories aren't in the data file, then add them
-					// DONE: check to see if there are any directories that don't exist anymore, then remove them
-					// DONE: use the resulting directory list!
-					// DONE: rebuild the file if changes were made
+										
+					/* Code for parsing a descript.ion file
 					
-/* Code for parsing a descript.ion file
+						$descriptions = Array(); 
+						if ($useDescriptionsFrom!="") { 
+							$descriptionsFile = @file($useDescriptionsFrom); 
+							if ($descriptionsFile!==false) { 
+								for ($i=0;$i<count($descriptionsFile);$i++) { 
+									$d = explode($separationString,$descriptionsFile[$i]); 
+									if (!$descriptionFilenamesCaseSensitive) { 
+										$d[0] = strtolower($d[0]); 
+									} 
+									$descriptions[$d[0]] = htmlentities(join($separationString, array_slice($d, 1))); 
+								} 
+							} 
+						} 
+					
+					*/	
 
-	$descriptions = Array(); 
-	if ($useDescriptionsFrom!="") { 
-		$descriptionsFile = @file($useDescriptionsFrom); 
-		if ($descriptionsFile!==false) { 
-			for ($i=0;$i<count($descriptionsFile);$i++) { 
-				$d = explode($separationString,$descriptionsFile[$i]); 
-				if (!$descriptionFilenamesCaseSensitive) { 
-					$d[0] = strtolower($d[0]); 
-				} 
-				$descriptions[$d[0]] = htmlentities(join($separationString, array_slice($d, 1))); 
-			} 
-		} 
-	} 
-
-*/	
-				
+					// check for the data file				
 					// BUG: need to look in the actual location, not just this hardcoded location.!
 					if (file_exists(FF_PHOTODIR.FF_THUMBDIR."_albums.txt")) {
 						
@@ -339,6 +335,7 @@ class album {
 
 				switch (strtolower($fileExt)) {
 					case 'jpg':
+					case 'jpeg':
 					case 'gif':
 					case 'png':
 						$fileType = 'image';
